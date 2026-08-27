@@ -1,8 +1,13 @@
 if SERVER then
 	AddCSLuaFile()
-
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_announcer.vmt")
+	
+	-- bum ass net messages
+	util.AddNetworkString("TTT2_Announcer_EPOP")
 end
+
+CreateConVar("ttt2_announcer_show_purchaser_team", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Should the purchase announcement include the team of the player who bought the equipment?", 0, 1)
+CreateConVar("ttt2_announcer_purchase_time_on_screen", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
 
 function ROLE:PreInitialize()
 	self.color = Color(75, 104, 169, 255)
@@ -51,12 +56,15 @@ if SERVER then
 	-- announcer logic
 	hook.Add("TTT2OrderedEquipment", "TTT2_AnnouncerSomeonePurchased", function(ply, equipmentName, isItem, credits, ignoreCost)
 		-- dont run if role is disabled
-		if ttt_announcer.enabled == 0 then return end
+		print("checking if role is enabled")
+		PrintTable(roles.GetAvailableTeams())
+		if ttt_announcer_enabled == 0 then return end
 		
 		-- try to find the first living announcer
+		print("checking if a player has role")
 		local livingAnnouncer = nil
 		for _, v in pairs(roles.GetTeamMembers(TEAM_INNOCENT)) do
-			if v:IsValid() and v:Alive() and v:GetRole() == ROLE_ANNOUNCER then
+			if v:IsValid() and v:Alive() and v:GetSubRole() == ROLE_ANNOUNCER then
 				livingAnnouncer = v
 				break
 			end
@@ -64,39 +72,64 @@ if SERVER then
 		
 		-- no announcer left alive then return early
 		if livingAnnouncer == nil then return end
+		print("player has role")
 		
 		-- try to get actual equipment
-		local equipmentTable = scripted_ents.GetStored(equipmentName)
-		if equipmentTable == nil then return end
+		print("checking for equipment")
+		print(equipmentName)
+		local ent = weapons.Get(equipmentName) or items.Get(equipmentName)
+		if ent == nil then return end
+		print("equipment found")
 		
 		-- make the announcement
-		local equipmentNameLocalized = equipmentTable.PrintName
-		equipmentNameLocalized = LANG.TryTranslation(equipmentNameLocalized)
-		local textDescString = LANG.TryTranslation("ttt2_announcer_reveal_purchase_desc")
 		local purchaseDisplayTime = GetConVar("ttt2_announcer_purchase_time_on_screen"):GetInt()
-		if GetConVar("ttt2_announcer_show_purchaser_team"):GetBool() == true then
-			local plyTeam = ply:GetTeam()
-			local purchaserRoleLabel = "unidentified terrorist"
+		local textString
+		local purchaserRoleLabel
+		if GetConVar("ttt2_announcer_show_purchaser_team"):GetBool() then
+			local plyTeam = ply:GetRealTeam()
+			purchaserRoleLabel = "ttt2_label_announcer_other_purchaser"
 			if plyTeam == TEAM_INNOCENT then
-				purchaserRoleLabel = "innocent terrorist"
+				purchaserRoleLabel = "ttt2_label_announcer_innocent_purchaser"
 			elseif plyTeam == TEAM_TRAITOR then
-				purchaserRoleLabel = "traitorous terrorist"
+				purchaserRoleLabel = "ttt2_label_announcer_traitor_purchaser"
 			end
 			
-			local textString = LANG.GetParamTranslation("ttt2_announcer_reveal_purchase_team", {team = purchaserRoleLabel, equipment = equipmentNameLocalized})
+			textString = "ttt2_announcer_reveal_purchase_team"
 		else
-			local textString = LANG.GetParamTranslation("ttt2_announcer_reveal_purchase", {equipment = equipmentNameLocalized})
+			textString = "ttt2_announcer_reveal_purchase"
 		end
 		
-		-- finally send the message
-		EPOP:AddMessage(nil, {text = textString, color = ANNOUNCER.color}, textDescString, purchaseDisplayTime, true)
+		net.Start("TTT2_Announcer_EPOP")
+			net.WriteString(textString)
+			net.WriteString((GetConVar("ttt2_announcer_show_purchaser_team"):GetBool() and purchaserRoleLabel) or "")
+			net.WriteString(equipmentName)
+			net.WriteColor(ANNOUNCER.color, false)
+			net.WriteUInt(purchaseDisplayTime, 4)
+		net.Broadcast()
 	end)
 end
 
-CreateConVar("ttt2_announcer_show_purchaser_team", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Should the purchase announcement include the team of the player who bought the equipment?", 0, 1)
-CreateConVar("ttt2_announcer_purchase_time_on_screen", 5, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
-
+-- bum ass epop
 if CLIENT then
+	net.Receive("TTT2_Announcer_EPOP", function(len, ply)
+		local title = net.ReadString()
+		local teamName = net.ReadString()
+		teamName = LANG.TryTranslation(teamName)
+		local equipment = net.ReadString()
+		local color = net.ReadColor(false)
+		local displayTime = net.ReadUInt(4)
+		
+		local storedEnt = weapons.GetStored(equipment) or items.Get(equipment)
+		local equipmentName = (storedEnt and (storedEnt.PrintName or (storedEnt.EquipMenuData and storedEnt.EquipMenuData.name))) or equipment
+		equipmentName = LANG.TryTranslation(equipmentName)
+		
+		local textString = LANG.GetParamTranslation(title, {team = teamName, equipment = equipmentName})
+		
+		-- local iconMat = Material("vgui/ttt/dynamic/roles/icon_announcer")
+		
+		EPOP:AddMessage({text = textString, color = color}, "ttt2_announcer_reveal_purchase_desc", displayTime, nil, true)
+	end)
+	
 	function ROLE:AddToSettingsMenu(parent)
 		local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
 

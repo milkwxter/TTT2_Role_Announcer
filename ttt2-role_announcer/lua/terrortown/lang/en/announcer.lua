@@ -11,7 +11,7 @@ L["ttt2_desc_" .. ANNOUNCER.name] = [[The Announcer will reveal items purchased 
 -- CUSTOM ROLE LANGUAGE STRINGS
 L["ttt2_announcer_reveal_purchase"] = "A player has purchased: {equipment}."
 L["ttt2_announcer_reveal_purchase_team"] = "A {team} has purchased: {equipment}."
-L["ttt2_announcer_reveal_purchase_desc"] = "This message was brought to you by your trusty Announcer Detective!"
+L["ttt2_announcer_reveal_purchase_desc"] = "This message was brought to you by your trusty Announcer!"
 
 L["ttt2_label_announcer_show_purchaser_team"] = "Should the purchase announcement include the team of the player who bought the equipment?"
 L["ttt2_label_announcer_purchase_time_on_screen"] = "How long should the purchase notification stay on screen in seconds?"

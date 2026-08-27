@@ -7,5 +7,6 @@ I am updating the damn mod!
 	- [✓] Add lang file support for the announcements.
 - [✓] Add more convars to customize the experience.
 - [ ] Support the events system.
+- [ ] Change strings in convar menu, too long.
 
-- [ ] Test him out.
+- [✓] Test him out.
