@@ -49,15 +49,20 @@ if SERVER then
 	end
 
 	-- When round begins reset cooldowns to prevent funky business
-	hook.Add("TTT2OrderedEquipment", "AnnouncerSomeonePurchased", function(ply, equipmentName, isItem, credits, ignoreCost)
-		-- find the announcer
+	hook.Add("TTT2OrderedEquipment", "TTT2_AnnouncerSomeonePurchased", function(ply, equipmentName, isItem, credits, ignoreCost)
+		-- find the announcer if possible
+		local livingAnnouncer = nil
 		for k, v in pairs(roles.GetTeamMembers(TEAM_INNOCENT)) do
-			-- make sure he is alive
 			if v:GetRoleString() == "announcer" and v:Alive() then
-				-- print message to everyones screen
-				EPOP:AddMessage(nil, {text = "Someone has purchased an item: " .. equipmentName, color = ANNOUNCER.color}, "This message was broadcasted by your Announcer", 5, true)
-				return
+				livingAnnouncer = v
+				break
 			end
 		end
+		
+		-- no announcer left alive then return early
+		if livingAnnouncer == nil then return end
+		
+		-- make the announcement
+		EPOP:AddMessage(nil, {text = "Someone has purchased an item: " .. equipmentName, color = ANNOUNCER.color}, "This message was broadcasted by your Announcer", 5, true)
 	end)
 end
