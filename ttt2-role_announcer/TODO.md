@@ -10,5 +10,6 @@ I am updating the damn mod!
 	- Reason: Lowkey I dont think events would benefit this role.
 - [ ] Change strings in convar menu, too long.
 - [ ] Convar setting where only the Announcer can see the purchases?
+- [ ] remove debug messages
 
 - [✓] Test him out.
