@@ -6,7 +6,8 @@ I am updating the damn mod!
 	- [✓] Show the localized name of the equipment.
 	- [✓] Add lang file support for the announcements.
 - [✓] Add more convars to customize the experience.
-- [ ] Support the events system.
+- [✗] Support the events system.
+	- Reason: Lowkey I dont think events would benefit this role.
 - [ ] Change strings in convar menu, too long.
 
 - [✓] Test him out.
