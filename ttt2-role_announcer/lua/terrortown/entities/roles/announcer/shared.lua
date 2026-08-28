@@ -2,12 +2,13 @@ if SERVER then
 	AddCSLuaFile()
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_announcer.vmt")
 	
+	-- friendly convars
+	CreateConVar("ttt2_announcer_show_purchaser_team", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Should the purchase announcement include the team of the player who bought the equipment?", 0, 1)
+	CreateConVar("ttt2_announcer_purchase_time_on_screen", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
+	
 	-- bum ass net messages
 	util.AddNetworkString("TTT2_Announcer_EPOP")
 end
-
-CreateConVar("ttt2_announcer_show_purchaser_team", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Should the purchase announcement include the team of the player who bought the equipment?", 0, 1)
-CreateConVar("ttt2_announcer_purchase_time_on_screen", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
 
 function ROLE:PreInitialize()
 	self.color = Color(75, 104, 169, 255)
