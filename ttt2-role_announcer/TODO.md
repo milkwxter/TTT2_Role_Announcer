@@ -8,8 +8,8 @@ I am updating the damn mod!
 - [✓] Add more convars to customize the experience.
 - [✗] Support the events system.
 	- Reason: Lowkey I dont think events would benefit this role.
-- [ ] Change strings in convar menu, too long.
-- [ ] Convar setting where only the Announcer can see the purchases?
-- [ ] remove debug messages
+- [✓] Change strings in convar menu, too long.
+- [ ] Convar setting where only the Announcer can see the purchases? IDK
+- [✓] remove debug messages
 
 - [✓] Test him out.
