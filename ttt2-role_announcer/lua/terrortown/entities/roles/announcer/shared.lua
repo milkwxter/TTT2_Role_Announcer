@@ -57,12 +57,9 @@ if SERVER then
 	-- announcer logic
 	hook.Add("TTT2OrderedEquipment", "TTT2_AnnouncerSomeonePurchased", function(ply, equipmentName, isItem, credits, ignoreCost)
 		-- dont run if role is disabled
-		print("checking if role is enabled")
-		PrintTable(roles.GetAvailableTeams())
 		if ttt_announcer_enabled == 0 then return end
 		
 		-- try to find the first living announcer
-		print("checking if a player has role")
 		local livingAnnouncer = nil
 		for _, v in pairs(roles.GetTeamMembers(TEAM_INNOCENT)) do
 			if v:IsValid() and v:Alive() and v:GetSubRole() == ROLE_ANNOUNCER then
@@ -73,14 +70,10 @@ if SERVER then
 		
 		-- no announcer left alive then return early
 		if livingAnnouncer == nil then return end
-		print("player has role")
 		
 		-- try to get actual equipment
-		print("checking for equipment")
-		print(equipmentName)
 		local ent = weapons.Get(equipmentName) or items.Get(equipmentName)
 		if ent == nil then return end
-		print("equipment found")
 		
 		-- make the announcement
 		local purchaseDisplayTime = GetConVar("ttt2_announcer_purchase_time_on_screen"):GetInt()
