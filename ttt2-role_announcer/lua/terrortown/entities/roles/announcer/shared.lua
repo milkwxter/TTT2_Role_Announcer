@@ -4,7 +4,7 @@ if SERVER then
 	
 	-- friendly convars
 	CreateConVar("ttt2_announcer_show_purchaser_team", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "Should the purchase announcement include the team of the player who bought the equipment?", 0, 1)
-	CreateConVar("ttt2_announcer_purchase_time_on_screen", 4, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
+	CreateConVar("ttt2_announcer_purchase_time_on_screen", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "How long should the purchase notification stay on screen in seconds?", 1, 10)
 	
 	-- bum ass net messages
 	util.AddNetworkString("TTT2_Announcer_EPOP")
